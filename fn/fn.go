@@ -1,4 +1,4 @@
-package stat
+package fn
 
 import "math"
 
@@ -65,6 +65,7 @@ var GammaF = math.Gamma
 var sqrt2pi = math.Sqrt(2 * math.Pi)
 var logsqrt2pi = log(math.Sqrt(2 * math.Pi))
 
+//Natural logarithm of the Gamma function
 func LnΓ(x float64) (res float64) {
 	res = (x - 0.5) * log(x+4.5) - (x + 4.5)
 	res += logsqrt2pi
@@ -84,6 +85,15 @@ func IΓ(s, x float64) float64 {
 	return (s-1) * IΓ(s-1, x) + pow(x, s-1) * exp(-x)
 }
 
+//Lower incomplete Gamma function
+func Iγ(s, x float64) float64 { 
+	if s < 0 {
+		return 1
+	}
+	return (s-1) * Iγ(s-1, x) - pow(x, s-1) * exp(-x)
+}
+
+//Beta function
 func B(x float64, y float64) float64 {
 	return Γ(x) * Γ(y) / Γ(x+y)
 }
@@ -93,32 +103,32 @@ func IB(a, b, x float64) float64 {
 	return Beta_CDF_At(a, b, x) * math.Exp(LnΓ(a) + LnΓ(b) - LnΓ(a + b))
 }
 
+//Regularized incomplete Beta function == Beta_CDF
+func BetaIncReg(α float64, β float64) func(x float64) float64 { // Incomplete Beta regularized
+	return func(x float64) float64 {
+		//func Beta_CDF(α , β , x float64) float64 {
+		var y, res float64
+		y = math.Exp(LnΓ(α+β) - LnΓ(α) - LnΓ(β) + α*math.Log(x) + β*math.Log(1.0-x))
+		switch {
+		case x == 0:
+			res = 0.0
+		case x == 1.0:
+			res = 1.0
+		case x < (α+1.0)/(α+β+2.0):
+			res = y * betaContinuedFraction(α, β, x) / α
+		default:
+			res = 1.0 - y*betaContinuedFraction(β, α, 1.0-x)/β
+
+		}
+		return res
+	}
+}
+
+//LogBeta function
 func LnB(x float64, y float64) float64 {
 	return LnΓ(x) + LnΓ(y) - LnΓ(x+y)
 }
 
-/*
-
-	public static double logGammaP(int p, double x) {
-		double r = p*(p-1)*.25*Math.log(Math.PI);
-
-		for (int j=1; j<=p; j++) {
-			r += logGamma(x+.5*(1-j));
-		}
-
-		return r;
-	}
-	public static double logGammaPRatio(int p, double numerator, double denominator) {
-		double r = 0;
-
-		for (int j=1; j<=p; j++) {
-			r += logGamma(numerator+.5*(1-j));
-			r -= logGamma(denominator+.5*(1-j));
-		}
-
-		return r;
-	}
-*/
 
 func GammaP(p int, x float64) (r float64) {
 	pf := float64(p)
@@ -158,3 +168,81 @@ func LnGammaPRatio(p int, x, y float64) (r float64) {
 	}
 	return
 }
+
+func bisect(x, p, a, b, xtol, ptol float64) float64 {
+
+	var x0, x1, px float64
+
+	cdf := Beta_PDF(a, b)
+
+	for math.Abs(x1-x0) > xtol {
+		px = cdf(x)
+		switch {
+		case math.Abs(px-p) < ptol:
+			return x
+		case px < p:
+			x0 = x
+		case px > p:
+			x1 = x
+		}
+		x = 0.5 * (x0 + x1)
+	}
+	return x
+}
+
+func betaContinuedFraction(α, β, x float64) float64 {
+
+	var aa, del, res, qab, qap, qam, c, d, m2, m, acc float64
+	var i int64
+	const eps = 2.2204460492503131e-16
+	const maxIter = 1000000000
+
+	acc = 1e-16
+	qab = α + β
+	qap = α + 1.0
+	qam = α - 1.0
+	c = 1.0
+	d = 1.0 - qab*x/qap
+
+	if math.Abs(d) < eps {
+		d = eps
+	}
+	d = 1.0 / d
+	res = d
+
+	for i = 1; i <= maxIter; i++ {
+		m = (float64)(i)
+		m2 = 2 * m
+		aa = m * (β - m) * x / ((qam + m2) * (α + m2))
+		d = 1.0 + aa*d
+		if math.Abs(d) < eps {
+			d = eps
+		}
+		c = 1.0 + aa/c
+		if math.Abs(c) < eps {
+			c = eps
+		}
+		d = 1.0 / d
+		res *= d * c
+		aa = -(α + m) * (qab + m) * x / ((α + m2) * (qap + m2))
+		d = 1.0 + aa*d
+		if math.Abs(d) < eps {
+			d = eps
+		}
+		c = 1.0 + aa/c
+		if math.Abs(c) < eps {
+			c = eps
+		}
+		d = 1.0 / d
+		del = d * c
+		res *= del
+		if math.Abs(del-1.0) < acc {
+			return res
+		}
+	}
+
+	panic(fmt.Sprintf("betaContinuedFraction(): α or β too big, or maxIter too small"))
+	return -1.00
+}
+
+
