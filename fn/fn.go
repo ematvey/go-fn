@@ -1,12 +1,15 @@
 package fn
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 //Fact(n) = n*Fact(n-1)
 func Fact(n int64) int64 {
 	return PartialFact(n, 0)
 }
-//LnFact(n) = log(n)+LnFact(n-1)
+//LnFact(n) = math.Log(n)+LnFact(n-1)
 func LnFact(n int64) float64 {
 	return LnPartialFact(n, 0)
 }
@@ -24,7 +27,7 @@ func LnPartialFact(n int64, m int64) float64 {
 	if n == m {
 		return 0
 	}
-	return log(float64(n)) + LnPartialFact(n-1, m)
+	return math.Log(float64(n)) + LnPartialFact(n-1, m)
 }
 
 func Choose(n int64, i int64) int64 {
@@ -63,13 +66,13 @@ var Γ = math.Gamma
 var GammaF = math.Gamma
 
 var sqrt2pi = math.Sqrt(2 * math.Pi)
-var logsqrt2pi = log(math.Sqrt(2 * math.Pi))
+var logsqrt2pi = math.Log(math.Sqrt(2 * math.Pi))
 
 //Natural logarithm of the Gamma function
 func LnΓ(x float64) (res float64) {
-	res = (x - 0.5) * log(x+4.5) - (x + 4.5)
+	res = (x - 0.5) * math.Log(x+4.5) - (x + 4.5)
 	res += logsqrt2pi
-	res += log(1.0 +
+	res += math.Log(1.0 +
 		76.1800917300/(x+0) - 86.5053203300/(x+1) +
 		24.0140982200/(x+2) - 1.23173951600/(x+3) +
 		0.00120858003/(x+4) - 0.00000536382/(x+5))
@@ -82,7 +85,7 @@ func IΓ(s, x float64) float64 {
 	if s < 0 {
 		return 1
 	}
-	return (s-1) * IΓ(s-1, x) + pow(x, s-1) * exp(-x)
+	return (s-1) * IΓ(s-1, x) + math.Pow(x, s-1) * math.Exp(-x)
 }
 
 //Lower incomplete Gamma function
@@ -90,7 +93,7 @@ func Iγ(s, x float64) float64 {
 	if s < 0 {
 		return 1
 	}
-	return (s-1) * Iγ(s-1, x) - pow(x, s-1) * exp(-x)
+	return (s-1) * Iγ(s-1, x) - math.Pow(x, s-1) * math.Exp(-x)
 }
 
 //Beta function
@@ -100,13 +103,11 @@ func B(x float64, y float64) float64 {
 
 //Non regularized incomplete Beta function
 func IB(a, b, x float64) float64 { 
-	return Beta_CDF_At(a, b, x) * math.Exp(LnΓ(a) + LnΓ(b) - LnΓ(a + b))
+	return BetaIncReg(a, b, x) * math.Exp(LnΓ(a) + LnΓ(b) - LnΓ(a + b))
 }
 
-//Regularized incomplete Beta function == Beta_CDF
-func BetaIncReg(α float64, β float64) func(x float64) float64 { // Incomplete Beta regularized
-	return func(x float64) float64 {
-		//func Beta_CDF(α , β , x float64) float64 {
+//Regularized incomplete Beta function
+func BetaIncReg(α float64, β, x float64) float64 { 
 		var y, res float64
 		y = math.Exp(LnΓ(α+β) - LnΓ(α) - LnΓ(β) + α*math.Log(x) + β*math.Log(1.0-x))
 		switch {
@@ -121,7 +122,6 @@ func BetaIncReg(α float64, β float64) func(x float64) float64 { // Incomplete 
 
 		}
 		return res
-	}
 }
 
 //LogBeta function
@@ -169,26 +169,6 @@ func LnGammaPRatio(p int, x, y float64) (r float64) {
 	return
 }
 
-func bisect(x, p, a, b, xtol, ptol float64) float64 {
-
-	var x0, x1, px float64
-
-	cdf := Beta_PDF(a, b)
-
-	for math.Abs(x1-x0) > xtol {
-		px = cdf(x)
-		switch {
-		case math.Abs(px-p) < ptol:
-			return x
-		case px < p:
-			x0 = x
-		case px > p:
-			x1 = x
-		}
-		x = 0.5 * (x0 + x1)
-	}
-	return x
-}
 
 func betaContinuedFraction(α, β, x float64) float64 {
 
