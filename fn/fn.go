@@ -96,6 +96,11 @@ func Iγ(s, x float64) float64 {
 	return (s-1) * Iγ(s-1, x) - math.Pow(x, s-1) * math.Exp(-x)
 }
 
+// Regularized Gamma function
+func Γr(s, x float64) float64 { 
+	return Iγ(s, x) / Γ(s)
+}
+
 //Beta function
 func B(x float64, y float64) float64 {
 	return Γ(x) * Γ(y) / Γ(x+y)
@@ -107,7 +112,7 @@ func IB(a, b, x float64) float64 {
 }
 
 //Regularized incomplete Beta function
-func BetaIncReg(α float64, β, x float64) float64 { 
+func BetaIncReg(α, β, x float64) float64 { 
 		var y, res float64
 		y = math.Exp(LnΓ(α+β) - LnΓ(α) - LnΓ(β) + α*math.Log(x) + β*math.Log(1.0-x))
 		switch {
