@@ -230,4 +230,13 @@ func betaContinuedFraction(α, β, x float64) float64 {
 	return -1.00
 }
 
+func LnBinomCoeff(n, k int64) float64 {
+	return LnFact(n) - LnFact(k) - LnFact(n-k)
+}
+
+// Binomial coefficient (in combinatorics, it gives the number of ways, disregarding order, that k objects can be chosen from among n objects; more formally, the number of k-element subsets (or k-combinations) of an n-element set)
+func BinomCoeff(n, k int64) float64 {
+	return math.Exp(LnFact(n) - LnFact(k) - LnFact(n-k))
+}
+
 
