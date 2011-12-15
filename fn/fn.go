@@ -79,21 +79,46 @@ func LnΓ(x float64) (res float64) {
 
 	return
 }
-
-//Upper incomplete Gamma function
+/*
+//Upper incomplete Gamma function	DOES NOT WORK FOR FLOAT, ONLY INT S, needs to be reimplemented
 func IΓ(s, x float64) float64 { 
 	if s < 0 {
 		return 1
 	}
 	return (s-1) * IΓ(s-1, x) + math.Pow(x, s-1) * math.Exp(-x)
 }
+*/
 
-//Lower incomplete Gamma function
+//Upper incomplete Gamma function
+func IΓ(s, x float64) float64 { 
+	if s < 0 {
+		return 1
+	}
+	return igamc(s,x) * Γ (s)
+}
+/*
+//Upper incomplete Gamma function for integer s only
+func IΓint(s int64, x float64) float64 { 
+	if s < 0 {
+		return 1
+	}
+	return float64(s-1) * IΓint(s-1, x) + math.Pow(x, float64(s-1)) * math.Exp(-x)
+}
+
+//Lower incomplete Gamma function   BUGGY!!!
 func Iγ(s, x float64) float64 { 
 	if s < 0 {
 		return 1
 	}
 	return (s-1) * Iγ(s-1, x) - math.Pow(x, s-1) * math.Exp(-x)
+}
+*/
+//Lower incomplete Gamma function
+func Iγ(s, x float64) float64 { 
+	if s < 0 {
+		return 1
+	}
+	return igam(s,x) * Γ (s)
 }
 
 // Regularized Gamma function
@@ -234,7 +259,10 @@ func LnBinomCoeff(n, k int64) float64 {
 	return LnFact(n) - LnFact(k) - LnFact(n-k)
 }
 
-// Binomial coefficient (in combinatorics, it gives the number of ways, disregarding order, that k objects can be chosen from among n objects; more formally, the number of k-element subsets (or k-combinations) of an n-element set)
+// Binomial coefficient (in combinatorics, it gives the number of ways, disregarding order, 
+// that k objects can be chosen from among n objects; more formally, the number of 
+// k-element subsets (or k-combinations) of an n-element set)
+
 func BinomCoeff(n, k int64) float64 {
 	return math.Exp(LnFact(n) - LnFact(k) - LnFact(n-k))
 }
