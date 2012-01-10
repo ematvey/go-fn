@@ -12,7 +12,7 @@ import (
 // The function is defined by
 //
 //
-//  igamc(a,x)   =   1 - igam(a,x)
+//  IGamC(a,x)   =   1 - IGam(a,x)
 //
 //                            inf.
 //                              -
@@ -37,13 +37,13 @@ import (
 //    IEEE     0.01,0.5  0,100      200000       1.4e-13     1.6e-15
 
 const (
-	MACHEP float64 = 1.11022302462515654042E-16
-	MAXLOG float64 = 7.08396418532264106224E2
+	MACHEP float64 = 1.11022302462515654042e-16
+	MAXLOG float64 = 7.08396418532264106224e2
 	big    float64 = 4.503599627370496e15
 	biginv float64 = 2.22044604925031308085e-16
 )
 
-func igamc(a, x float64) float64 {
+func IGamC(a, x float64) float64 {
 	var ans, ax, c, yc, r, t, y, z, pk, pkm1, pkm2, qk, qkm1, qkm2 float64
 
 	if x <= 0 || a <= 0 {
@@ -51,11 +51,11 @@ func igamc(a, x float64) float64 {
 	}
 
 	if x < 1.0 || x < a {
-		return 1.0 - igam(a, x)
+		return 1.0 - IGam(a, x)
 	}
 	ax = a*math.Log(x) - x - LnΓ(a)
 	if ax < -MAXLOG {
-		panic("igamc: UNDERFLOW")
+		panic("IGamC: UNDERFLOW")
 		return 0.0
 	}
 	ax = math.Exp(ax)
@@ -104,7 +104,7 @@ func igamc(a, x float64) float64 {
 //                           x
 //                            -
 //                   1       | |  -t  a-1
-//  igam(a,x)  =   -----     |   e   t   dt.
+//  IGam(a,x)  =   -----     |   e   t   dt.
 //                  -      | |
 //                 | (a)    -
 //                           0
@@ -131,19 +131,19 @@ func igamc(a, x float64) float64 {
 //          k=0   | (a+k+1)
 //
 
-func igam(a, x float64) float64 {
+func IGam(a, x float64) float64 {
 	var ans, ax, c, r float64
 
 	if x <= 0 || a <= 0 {
 		return 0.0
 	}
 	if x > 1.0 && x > a {
-		return 1.0 - igamc(a, x)
+		return 1.0 - IGamC(a, x)
 	}
 	// Compute  x**a * exp(-x) / gamma(a)
 	ax = a*math.Log(x) - x - LnΓ(a)
 	if ax < -MAXLOG {
-		panic("igam: UNDERFLOW")
+		panic("IGam: UNDERFLOW")
 		return 0.0
 	}
 	ax = math.Exp(ax)
@@ -161,3 +161,4 @@ func igam(a, x float64) float64 {
 
 	return ans * ax / a
 }
+

@@ -14,6 +14,12 @@ func LnFact(n int64) float64 {
 	return LnPartialFact(n, 0)
 }
 
+//LnFactBig(n) = Gamma(n+1)
+func LnFactBig(n int64) float64 {
+	return LnΓ(float64(n+1))
+}
+
+
 //returns Fact(n)/Fact(m)
 func PartialFact(n int64, m int64) int64 {
 	if n == m {
@@ -89,14 +95,11 @@ func IΓ(s, x float64) float64 {
 }
 */
 
-//Upper incomplete Gamma function
+//Upper incomplete Gamma function	// did not pass test for IΓ(1.45896, 3.315) == 0.0706743424609074192334
 func IΓ(s, x float64) float64 { 
-	if s < 0 {
-		return 1
-	}
-	return igamc(s,x) * Γ (s)
+	return IGamC(s,x) * Γ(s)
 }
-/*
+
 //Upper incomplete Gamma function for integer s only
 func IΓint(s int64, x float64) float64 { 
 	if s < 0 {
@@ -105,6 +108,7 @@ func IΓint(s int64, x float64) float64 {
 	return float64(s-1) * IΓint(s-1, x) + math.Pow(x, float64(s-1)) * math.Exp(-x)
 }
 
+/*
 //Lower incomplete Gamma function   BUGGY!!!
 func Iγ(s, x float64) float64 { 
 	if s < 0 {
@@ -113,12 +117,21 @@ func Iγ(s, x float64) float64 {
 	return (s-1) * Iγ(s-1, x) - math.Pow(x, s-1) * math.Exp(-x)
 }
 */
+
 //Lower incomplete Gamma function
 func Iγ(s, x float64) float64 { 
 	if s < 0 {
 		return 1
 	}
-	return igam(s,x) * Γ (s)
+	return IGam(s,x) * Γ (s)
+}
+
+//Lower incomplete Gamma function for integer s only
+func Iγint(s int64, x float64) float64 { 
+	if s < 0 {
+		return 1
+	}
+	return Γ(float64(s)) - IΓint(s, x)
 }
 
 // Regularized Gamma function
@@ -255,16 +268,52 @@ func betaContinuedFraction(α, β, x float64) float64 {
 	return -1.00
 }
 
-func LnBinomCoeff(n, k int64) float64 {
-	return LnFact(n) - LnFact(k) - LnFact(n-k)
-}
-
 // Binomial coefficient (in combinatorics, it gives the number of ways, disregarding order, 
 // that k objects can be chosen from among n objects; more formally, the number of 
 // k-element subsets (or k-combinations) of an n-element set)
 
-func BinomCoeff(n, k int64) float64 {
-	return math.Exp(LnFact(n) - LnFact(k) - LnFact(n-k))
+func LnBinomCoeff(n, k int64) float64 {
+		if k == 0 {
+			return math.Log(1)
+		}
+		if n == 0 {
+			panic("n == 0")
+		}
+	if n < 10 && k < 10 {
+		return math.Log(BinomCoeff(n, k))
+	}
+
+	// else, use factorial formula
+	return LnFactBig(n) - LnFactBig(k) - LnFactBig(n-k)
 }
 
+func BinomCoeff(n, k int64) float64 {
+		if k == 0 {
+			return 1
+		}
+		if n == 0 {
+			return 0
+		}
+	// if n, k are small, use recursive formula
+	if n < 10 && k < 10 {
+		return BinomCoeff(n-1, k-1) + BinomCoeff(n-1, k)
+	}
+
+	// else, use factorial formula
+fmt.Println(LnFactBig(n), LnFactBig(k), LnFactBig(n-k))
+	return Round(math.Exp(LnFactBig(n) - LnFactBig(k) - LnFactBig(n-k)))
+}
+
+// Round to nearest integer
+func Round(x float64)  float64 {
+	var i float64
+	f:= math.Floor(x)
+	c:= math.Ceil(x)
+	if x - f < c -x {
+		i = f
+	} else {
+		i = c
+	}
+	return i
+}
 

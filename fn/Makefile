@@ -5,5 +5,4 @@ GOFILES=\
 	fn.go\
 	igam.go\
 
-
 include $(GOROOT)/src/Make.pkg
