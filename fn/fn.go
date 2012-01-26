@@ -317,3 +317,43 @@ func Round(x float64)  float64 {
 	return i
 }
 
+// Harmonic mean
+func HarmonicMean(data *Vector) float64 {
+	n:=data.L
+	sum := 0.0
+	for i := 0; i < n; i++ {
+		sum += 1.0 / data.Get(i)
+	}
+	return sum/float64(n)
+}
+
+// Geometric mean
+func GeomMean(data *Vector) float64 {
+	n:=data.L
+	sum := 0.0
+	for i := 0; i < n; i++ {
+		sum += math.Log(data.Get(i))
+	}
+	return math.Exp(sum/float64(n))
+}
+
+// Arithmetic mean
+func ArithMean(data *Vector) float64 {
+	n:=data.L
+	sum := 0.0
+	for i := 0; i < n; i++ {
+		sum += data.Get(i)
+	}
+	return sum/float64(n)
+}
+
+// Generalized mean
+func GenMean(data *Vector, p float64) float64 {
+	n:=data.L
+	sum := 0.0
+	for i := 0; i < n; i++ {
+		sum += math.Pow(data.Get(i), p)
+	}
+	return math.Pow(sum/float64(n), 1/p)
+}
+
