@@ -1,3 +1,7 @@
+// Special math functions
+/* To do:
+Better implementation of Riemann Zeta
+*/
 package fn
 
 import (
@@ -9,9 +13,35 @@ import (
 func Fact(n int64) int64 {
 	return PartialFact(n, 0)
 }
+
+/*
 //LnFact(n) = math.Log(n)+LnFact(n-1)
 func LnFact(n int64) float64 {
-	return LnPartialFact(n, 0)
+	var lnF float64
+	if n == 0 {
+		lnF = math.Log(1)
+	} else {
+		lnF = LnPartialFact(n, 0)
+	}
+	return lnF
+}
+*/
+
+
+func LnFact(n int64) float64 {
+	var (
+		lnF float64
+		i int64
+	)
+	if n == 0 {
+		lnF = 0
+	} else {
+
+		for i = 1; i <= n; i++	{
+			lnF += math.Log(float64(i))
+		}
+	}
+	return lnF
 }
 
 //LnFactBig(n) = Gamma(n+1)
@@ -356,4 +386,68 @@ func GenMean(data *Vector, p float64) float64 {
 	}
 	return math.Pow(sum/float64(n), 1/p)
 }
+
+// Bernoulli number
+// Akiyama–Tanigawa algorithm for Bn
+func Bn(n int64) float64 {
+	var m int64
+	a := make([]float64, n)
+	for m = 0; m <= n; m++ {
+		a[m] = 1/float64(m+1)
+		for j := m; j >= 1; j-- {
+			a[j-1] = float64(j)*(a[j-1] - a[j])
+		}
+	}
+	return a[0] // (which is Bn)
+}
+
+// Riemann zeta function ζ(s) naive implementation
+func RiemannZeta(s float64) float64 {
+	var (
+		x float64
+		nIter int
+	)
+	switch s {
+	case 0:
+		x = -0.5 
+	case 1.5:
+		x = 2.61237534868548834334856756792407163057080065240006340757332824881492776768827286099624386812631195238297
+	case 2:
+		x = 1.64493406684822643647241516664602518921894990120679843773555822937000747040320087383362890061975870
+	case 3:
+		x = 1.20205690315959428539973816151144999076498629234049888179227155534183820578631309018645587360933525814619915
+	case 4:
+		x = 1.08232323371113819151600369654116790277475095191872690768297621544412061618696884655690963594169991
+	case 5:
+		x = 1.03692775514336992633136548645703416805708091950191281197419267790380358978628148456004310655713333
+	case 6:
+		x = 1.01734306198444913971451792979092052790181749003285356184240866400433218290195789788277397793853517
+	case 7:
+		x = 1.00834927738192282683979754984979675959986356056523870641728313657160147831735573534609696891385132
+	case 8:
+		x = 1.00407735619794433937868523850865246525896079064985002032911020265258295257474881439528723037237197
+	case 9:
+		x = 1.00200839282608221441785276923241206048560585139488875654859661590978505339025839895039306912716958
+	case 10:
+		x = 1.00099457512781808533714595890031901700601953156447751725778899463629146515191295439704196861038565
+
+	default:
+
+		nIter = 1e5
+		if s < 1.6 {
+			nIter = 1e8
+		} else if s < 1.7 {
+			nIter = 1e7
+		} else if s < 1.8 {
+			nIter = 1e6
+		}
+
+		x = 0.0
+		for i:=1; i < nIter ; i++ {
+			x += math.Pow(float64(i), -s)
+		}
+	}
+	return x
+}
+
 

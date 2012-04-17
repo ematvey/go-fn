@@ -9,6 +9,10 @@ import (
 
 
 
+func TestLnFact(t *testing.T) {
+				fmt.Println("LnFact(100): ", LnFact(100))
+}
+
 func TestGamma(t *testing.T) {
 	var (
 		y float64
@@ -272,4 +276,77 @@ func TestIncompleteGamma2(t *testing.T) {
 		fmt.Println("test of binom coeff", BinomCoeff(150, 71) )
 
 }
+
+func TestRiemannZeta(t *testing.T) {
+
+	var s, x, y float64
+	fmt.Println("test of Riemann Zeta function")
+/*
+	s= 1.3897086549
+	x= RiemannZeta(s)
+	y= 3.170858108083585
+	if !check(x, y){
+		t.Error()
+		fmt.Println(s, x, y)
+	}
+	s= 1.45
+	x= RiemannZeta(s)
+	y= 2.831196475751212
+	if !check(x, y){
+		t.Error()
+		fmt.Println(s, x, y)
+	}
+*/
+	s= 1.51
+	x= RiemannZeta(s)
+	y= 2.573836704920163
+	if !check(x, y){
+		t.Error()
+		fmt.Println(s, x, y)
+	}
+	s= 1.6
+	x= RiemannZeta(s)
+	y= 2.285765638569465
+	if !check(x, y){
+		t.Error()
+		fmt.Println(s, x, y)
+	}
+	s= 1.7
+	x= RiemannZeta(s)
+	y= 2.05428873708613
+	if !check(x, y){
+		t.Error()
+		fmt.Println(s, x, y)
+	}
+
+	s= 1.8
+	x= RiemannZeta(s)
+	y= 1.88222960312373
+	if !check(x, y){
+		t.Error()
+		fmt.Println(s, x, y)
+	}
+	s= 1.9
+	x= RiemannZeta(s)
+	y= 1.749746423414609
+	if !check(x, y){
+		t.Error()
+		fmt.Println(s, x, y)
+	}
+	s= 2.76
+	x= RiemannZeta(s)
+	y= 1.257491635558322
+	if !check(x, y){
+		t.Error()
+		fmt.Println(s, x, y)
+	}
+	s=3.3
+	x= RiemannZeta(s)
+	y= 1.151944793318855
+	if !check(x, y){
+		t.Error()
+		fmt.Println(s, x, y)
+	}
+}
+
 
