@@ -347,6 +347,13 @@ func TestRiemannZeta(t *testing.T) {
 		t.Error()
 		fmt.Println(s, x, y)
 	}
+	s=3.141592
+	x= RiemannZeta(s)
+	y= 1.176241847926297842351
+	if !check(x, y){
+		t.Error()
+		fmt.Println(s, x, y)
+	}
 }
 
 
