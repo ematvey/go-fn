@@ -161,4 +161,3 @@ func IGam(a, x float64) float64 {
 
 	return ans * ax / a
 }
-

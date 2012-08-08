@@ -9,8 +9,8 @@ import (
 )
 */
 type Vector struct {
-	A []float64	// data
-	L int		// length
+	A []float64 // data
+	L int       // length
 }
 
 func NewVector(length int) (v *Vector) {

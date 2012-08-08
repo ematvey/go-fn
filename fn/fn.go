@@ -27,17 +27,16 @@ func LnFact(n int64) float64 {
 }
 */
 
-
 func LnFact(n int64) float64 {
 	var (
 		lnF float64
-		i int64
+		i   int64
 	)
 	if n == 0 {
 		lnF = 0
 	} else {
 
-		for i = 1; i <= n; i++	{
+		for i = 1; i <= n; i++ {
 			lnF += math.Log(float64(i))
 		}
 	}
@@ -46,9 +45,8 @@ func LnFact(n int64) float64 {
 
 //LnFactBig(n) = Gamma(n+1)
 func LnFactBig(n int64) float64 {
-	return LnΓ(float64(n+1))
+	return LnΓ(float64(n + 1))
 }
-
 
 //returns Fact(n)/Fact(m)
 func PartialFact(n int64, m int64) int64 {
@@ -106,7 +104,7 @@ var logsqrt2pi = math.Log(math.Sqrt(2 * math.Pi))
 
 //Natural logarithm of the Gamma function
 func LnΓ(x float64) (res float64) {
-	res = (x - 0.5) * math.Log(x+4.5) - (x + 4.5)
+	res = (x-0.5)*math.Log(x+4.5) - (x + 4.5)
 	res += logsqrt2pi
 	res += math.Log(1.0 +
 		76.1800917300/(x+0) - 86.5053203300/(x+1) +
@@ -115,6 +113,7 @@ func LnΓ(x float64) (res float64) {
 
 	return
 }
+
 /*
 //Upper incomplete Gamma function	DOES NOT WORK FOR FLOAT, ONLY INT S, needs to be reimplemented
 func IΓ(s, x float64) float64 { 
@@ -126,16 +125,16 @@ func IΓ(s, x float64) float64 {
 */
 
 //Upper incomplete Gamma function	// did not pass test for IΓ(1.45896, 3.315) == 0.0706743424609074192334
-func IΓ(s, x float64) float64 { 
-	return IGamC(s,x) * Γ(s)
+func IΓ(s, x float64) float64 {
+	return IGamC(s, x) * Γ(s)
 }
 
 //Upper incomplete Gamma function for integer s only
-func IΓint(s int64, x float64) float64 { 
+func IΓint(s int64, x float64) float64 {
 	if s < 0 {
 		return 1
 	}
-	return float64(s-1) * IΓint(s-1, x) + math.Pow(x, float64(s-1)) * math.Exp(-x)
+	return float64(s-1)*IΓint(s-1, x) + math.Pow(x, float64(s-1))*math.Exp(-x)
 }
 
 /*
@@ -149,15 +148,15 @@ func Iγ(s, x float64) float64 {
 */
 
 //Lower incomplete Gamma function
-func Iγ(s, x float64) float64 { 
+func Iγ(s, x float64) float64 {
 	if s < 0 {
 		return 1
 	}
-	return IGam(s,x) * Γ (s)
+	return IGam(s, x) * Γ(s)
 }
 
 //Lower incomplete Gamma function for integer s only
-func Iγint(s int64, x float64) float64 { 
+func Iγint(s int64, x float64) float64 {
 	if s < 0 {
 		return 1
 	}
@@ -165,7 +164,7 @@ func Iγint(s int64, x float64) float64 {
 }
 
 // Regularized Gamma function
-func Γr(s, x float64) float64 { 
+func Γr(s, x float64) float64 {
 	return Iγ(s, x) / Γ(s)
 }
 
@@ -175,26 +174,26 @@ func B(x float64, y float64) float64 {
 }
 
 //Non regularized incomplete Beta function
-func IB(a, b, x float64) float64 { 
-	return BetaIncReg(a, b, x) * math.Exp(LnΓ(a) + LnΓ(b) - LnΓ(a + b))
+func IB(a, b, x float64) float64 {
+	return BetaIncReg(a, b, x) * math.Exp(LnΓ(a)+LnΓ(b)-LnΓ(a+b))
 }
 
 //Regularized incomplete Beta function
-func BetaIncReg(α, β, x float64) float64 { 
-		var y, res float64
-		y = math.Exp(LnΓ(α+β) - LnΓ(α) - LnΓ(β) + α*math.Log(x) + β*math.Log(1.0-x))
-		switch {
-		case x == 0:
-			res = 0.0
-		case x == 1.0:
-			res = 1.0
-		case x < (α+1.0)/(α+β+2.0):
-			res = y * betaContinuedFraction(α, β, x) / α
-		default:
-			res = 1.0 - y*betaContinuedFraction(β, α, 1.0-x)/β
+func BetaIncReg(α, β, x float64) float64 {
+	var y, res float64
+	y = math.Exp(LnΓ(α+β) - LnΓ(α) - LnΓ(β) + α*math.Log(x) + β*math.Log(1.0-x))
+	switch {
+	case x == 0:
+		res = 0.0
+	case x == 1.0:
+		res = 1.0
+	case x < (α+1.0)/(α+β+2.0):
+		res = y * betaContinuedFraction(α, β, x) / α
+	default:
+		res = 1.0 - y*betaContinuedFraction(β, α, 1.0-x)/β
 
-		}
-		return res
+	}
+	return res
 }
 
 //LogBeta function
@@ -202,10 +201,9 @@ func LnB(x float64, y float64) float64 {
 	return LnΓ(x) + LnΓ(y) - LnΓ(x+y)
 }
 
-
 func GammaP(p int, x float64) (r float64) {
 	pf := float64(p)
-	r = math.Pow(math.Pi, 0.25 * pf * (pf - 1))
+	r = math.Pow(math.Pi, 0.25*pf*(pf-1))
 	for j := float64(1); j <= pf; j++ {
 		r *= GammaF(x + .5*(1-j))
 	}
@@ -213,6 +211,7 @@ func GammaP(p int, x float64) (r float64) {
 }
 
 var LnΓp = LnGammaP
+
 func LnGammaP(p int, x float64) (r float64) {
 	pf := float64(p)
 	r = pf * (pf - 1) * .25 * math.Log(math.Pi)
@@ -233,6 +232,7 @@ func GammaPRatio(p int, x, y float64) (r float64) {
 
 //LnΓp(x)/LnΓp(y)
 var LnΓpRatio = LnGammaPRatio
+
 func LnGammaPRatio(p int, x, y float64) (r float64) {
 	pf := float64(p)
 	for j := float64(1); j <= pf; j++ {
@@ -241,7 +241,6 @@ func LnGammaPRatio(p int, x, y float64) (r float64) {
 	}
 	return
 }
-
 
 func betaContinuedFraction(α, β, x float64) float64 {
 
@@ -303,12 +302,12 @@ func betaContinuedFraction(α, β, x float64) float64 {
 // k-element subsets (or k-combinations) of an n-element set)
 
 func LnBinomCoeff(n, k int64) float64 {
-		if k == 0 {
-			return math.Log(1)
-		}
-		if n == 0 {
-			panic("n == 0")
-		}
+	if k == 0 {
+		return math.Log(1)
+	}
+	if n == 0 {
+		panic("n == 0")
+	}
 	if n < 10 && k < 10 {
 		return math.Log(BinomCoeff(n, k))
 	}
@@ -318,28 +317,29 @@ func LnBinomCoeff(n, k int64) float64 {
 }
 
 func BinomCoeff(n, k int64) float64 {
-		if k == 0 {
-			return 1
-		}
-		if n == 0 {
-			return 0
-		}
+	if k == 0 {
+		return 1
+	}
+	if n == 0 {
+		return 0
+	}
 	// if n, k are small, use recursive formula
 	if n < 10 && k < 10 {
 		return BinomCoeff(n-1, k-1) + BinomCoeff(n-1, k)
 	}
 
 	// else, use factorial formula
-fmt.Println(LnFactBig(n), LnFactBig(k), LnFactBig(n-k))
+	fmt.Println(LnFactBig(n), LnFactBig(k), LnFactBig(n-k))
 	return Round(math.Exp(LnFactBig(n) - LnFactBig(k) - LnFactBig(n-k)))
 }
 
+
 // Round to nearest integer
-func Round(x float64)  float64 {
+func Round(x float64) float64 {
 	var i float64
-	f:= math.Floor(x)
-	c:= math.Ceil(x)
-	if x - f < c -x {
+	f := math.Floor(x)
+	c := math.Ceil(x)
+	if x-f < c-x {
 		i = f
 	} else {
 		i = c
@@ -349,37 +349,37 @@ func Round(x float64)  float64 {
 
 // Harmonic mean
 func HarmonicMean(data *Vector) float64 {
-	n:=data.L
+	n := data.L
 	sum := 0.0
 	for i := 0; i < n; i++ {
 		sum += 1.0 / data.Get(i)
 	}
-	return sum/float64(n)
+	return sum / float64(n)
 }
 
 // Geometric mean
 func GeomMean(data *Vector) float64 {
-	n:=data.L
+	n := data.L
 	sum := 0.0
 	for i := 0; i < n; i++ {
 		sum += math.Log(data.Get(i))
 	}
-	return math.Exp(sum/float64(n))
+	return math.Exp(sum / float64(n))
 }
 
 // Arithmetic mean
 func ArithMean(data *Vector) float64 {
-	n:=data.L
+	n := data.L
 	sum := 0.0
 	for i := 0; i < n; i++ {
 		sum += data.Get(i)
 	}
-	return sum/float64(n)
+	return sum / float64(n)
 }
 
 // Generalized mean
 func GenMean(data *Vector, p float64) float64 {
-	n:=data.L
+	n := data.L
 	sum := 0.0
 	for i := 0; i < n; i++ {
 		sum += math.Pow(data.Get(i), p)
@@ -393,9 +393,9 @@ func Bn(n int64) float64 {
 	var m int64
 	a := make([]float64, n)
 	for m = 0; m <= n; m++ {
-		a[m] = 1/float64(m+1)
+		a[m] = 1 / float64(m+1)
 		for j := m; j >= 1; j-- {
-			a[j-1] = float64(j)*(a[j-1] - a[j])
+			a[j-1] = float64(j) * (a[j-1] - a[j])
 		}
 	}
 	return a[0] // (which is Bn)
@@ -416,11 +416,9 @@ func RiemannZeta(s float64) float64 {
 			-7.0921568627450980392156862745098039215686274509804e+0}
 	)
 
-
-
 	switch s {
 	case 0:
-		x = -0.5 
+		x = -0.5
 	case 1:
 		x = math.NaN()
 	case 1.5:
@@ -452,25 +450,18 @@ func RiemannZeta(s float64) float64 {
 
 		for i := 1; i < a; i++ {
 			ii := float64(i)
-			x += 1.0/math.Pow(ii, s)
+			x += 1.0 / math.Pow(ii, s)
 		}
 
-		x += 1.0/((s - 1) * math.Pow(aa,(s - 1))) + 1/(2 * math.Pow(aa,s))
-		term := (s/2)/math.Pow(aa, (s + 1))
+		x += 1.0/((s-1)*math.Pow(aa, (s-1))) + 1/(2*math.Pow(aa, s))
+		term := (s / 2) / math.Pow(aa, (s+1))
 		x += term * b[0]
 
 		for i := 1; i < k; i++ {
-			ii:= float64(i)+1
-        		term *= (s + 2 * ii - 2) * (s + 2 * ii - 3)/(aa * aa * 2 * ii * (2 * ii - 1))
-        		x += term * b[i]
+			ii := float64(i) + 1
+			term *= (s + 2*ii - 2) * (s + 2*ii - 3) / (aa * aa * 2 * ii * (2*ii - 1))
+			x += term * b[i]
 		}
 	}
 	return x
 }
-
-
-
-
-
-
-
