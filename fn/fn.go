@@ -465,3 +465,24 @@ func RiemannZeta(s float64) float64 {
 	}
 	return x
 }
+
+// H returns the generalized harmonic number of order n of m. 
+func H(n int64, m float64) float64 {
+	var i int64
+	h := 0.0
+	for i = 1; i <= n; i++ {
+		h += math.Pow(float64(i), m)
+	}
+	return h
+}
+
+// Generalized harmonic number
+func H2(n int64, q, s float64) float64 {
+	var i int64
+	h := 0.0
+	for i = 1; i <= n; i++ {
+		h += math.Pow((float64(i) + q), -s)
+	}
+	return h
+}
+
