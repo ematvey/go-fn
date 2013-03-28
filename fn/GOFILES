@@ -1,4 +1,0 @@
-GOFILES=\
-     fn.go\
-     igam.go\
-     matrix.go\

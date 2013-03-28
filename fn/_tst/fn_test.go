@@ -249,14 +249,14 @@ func TestIncompleteGamma2(t *testing.T) {
 		t.Error()
 	}
 	/*
-		x = IΓ(18.3542, 3.96545)
-		y = 9.838284e+14
-		fmt.Println(x, y)
+			x = IΓ(18.3542, 3.96545)
+			y = 9.838284e+14
+			fmt.Println(x, y)
 
-		if !check(x, y, acc){
-			t.Error()
-		}
-	//FAILED, non-integer s
+			if !check(x, y, acc){
+				t.Error()
+			}
+		//FAILED, non-integer s
 	*/
 
 	x = IΓ(18, 3.96545)

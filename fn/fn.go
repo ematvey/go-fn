@@ -48,7 +48,7 @@ func LnFactBig(n int64) float64 {
 	return LnΓ(float64(n + 1))
 }
 
-//returns Fact(n)/Fact(m)
+//PartialFact returns Fact(n)/Fact(m)
 func PartialFact(n int64, m int64) int64 {
 	if n == m {
 		return 1
@@ -333,7 +333,6 @@ func BinomCoeff(n, k int64) float64 {
 	return Round(math.Exp(LnFactBig(n) - LnFactBig(k) - LnFactBig(n-k)))
 }
 
-
 // Round to nearest integer
 func Round(x float64) float64 {
 	var i float64
@@ -485,4 +484,3 @@ func H2(n int64, q, s float64) float64 {
 	}
 	return h
 }
-
