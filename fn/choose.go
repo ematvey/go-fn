@@ -1,3 +1,5 @@
+// Copyright 2012 - 2013 The Fn Authors. All rights reserved. See the LICENSE file.
+
 package fn
 
 // Binomial coefficients.
@@ -13,11 +15,6 @@ package fn
 import (
 	"math"
 )
-var log func(float64) float64 = math.Log
-var abs func(float64) float64 = math.Abs
-var floor func(float64) float64 = math.Floor
-var isNaN func(float64) bool = math.IsNaN
-var exp func(float64) float64 = math.Exp
 
 func lfastchoose(n, k float64) float64 {
 	return -log(n+1) - LnB(n-k+1, k+1)
@@ -27,26 +24,13 @@ func lfastchoose2(n, k float64) (float64, int) {
 	// mathematically the same as lfastchoose()
 	// less stable typically, but useful if n-k+1 < 0 
 	//	r := lgammafn_sign(n-k+1, s_choose)
-	r, s_choose := math.Lgamma(n-k+1)
+	r, s_choose := math.Lgamma(n - k + 1)
 	p, _ := math.Lgamma(n + 1)
 	q, _ := math.Lgamma(k + 1)
 	return p - q - r, s_choose
 }
 
-func isOdd(k float64) bool {
-	if k != 2*floor(k/2.0) {
-		return true
-	}
-	return false
-}
-
-func isInt(x float64) bool {
-	if abs((x)-floor((x)+0.5)) <= 1e-7 {
-		return true
-	}
-	return false
-}
-
+// FChoose returns generalized binomial coefficient i.e.,  also defined for non-integer n  (integer k).
 func FChoose(n, k float64) float64 {
 	const k_small_max = 30.0
 	// 30 is somewhat arbitrary: it is on the *safe* side:
@@ -106,8 +90,73 @@ func FChoose(n, k float64) float64 {
 
 	// else non-integer n >= 0
 	if n < k-1 {
-		r, s_choose:= lfastchoose2(n, k)
+		r, s_choose := lfastchoose2(n, k)
 		return float64(s_choose) * exp(r)
 	}
 	return exp(lfastchoose(n, k))
+}
+
+// LnFChoose returns the natural logarithm of the generalized binomial coefficient i.e.,  also defined for non-integer n  (integer k).
+func LnFChoose(n, k float64) float64 {
+	k0 := k
+	k = floor(k + 0.5)
+	// NaNs propagated correctly
+	if isNaN(n) || isNaN(k) {
+		return n + k
+	}
+	if abs(k-k0) > 1e-7 {
+		panic("k must be integer valued float64")
+	}
+	if k < 2 {
+		if k < 0 {
+			return negInf
+		}
+		if k == 0 {
+			return 0
+		}
+		/* else: k == 1 */
+		return log(abs(n))
+	}
+	/* else: k >= 2 */
+	if n < 0 {
+		return LnFChoose(-n+k-1, k)
+	} else if isInt(n) {
+
+		n = floor(n + 0.5)
+		if n < k {
+			return negInf
+		}
+		/* k <= n */
+		if n-k < 2 {
+			return LnFChoose(n, n-k) /* <- Symmetry */
+		}
+		/* else: n >= k+2 */
+		return lfastchoose(n, k)
+	}
+	/* else non-integer n >= 0 : */
+	if n < k-1 {
+		r, _ := lfastchoose2(n, k)
+		return r
+	}
+	return lfastchoose(n, k)
+}
+
+// Integer versions.
+
+// Choose returns binomial coefficient for integer n  and k.
+func Choose(n int64, i int64) int64 {
+	smaller := i
+	if n-i < smaller {
+		smaller = n - i
+	}
+	return PartialFact(n, smaller) / Fact(smaller)
+}
+
+// LnChoose returns the natural logarithm of the binomial coefficient for integer n  and k.
+func LnChoose(n int64, i int64) float64 {
+	smaller := i
+	if n-i < smaller {
+		smaller = n - i
+	}
+	return LnPartialFact(n, smaller) - LnFact(smaller)
 }
