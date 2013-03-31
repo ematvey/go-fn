@@ -28,10 +28,10 @@ func BinomCoeff(n, k int64) float64 {
 
 	// else, use factorial formula
 	//	fmt.Println(LnFactBig(n), LnFactBig(k), LnFactBig(n-k))
-	return Round(math.Exp(LnFactBig(n) - LnFactBig(k) - LnFactBig(n-k)))
+	return Round(math.Exp(LnFactBig(float64(n)) - LnFactBig(float64(k)) - LnFactBig(float64(n-k))))
 }
 
-func LnBinomCoeff(n, k int64) float64 {
+func LnBinomCoeff(n, k float64) float64 {
 	if k == 0 {
 		return math.Log(1)
 	}
@@ -39,7 +39,10 @@ func LnBinomCoeff(n, k int64) float64 {
 		panic("n == 0")
 	}
 	if n < 10 && k < 10 {
-		return math.Log(BinomCoeff(n, k))
+nn:= int64(n)
+kk:= int64(k)
+
+		return math.Log(BinomCoeff(nn, kk))
 	}
 
 	// else, use factorial formula

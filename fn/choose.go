@@ -149,14 +149,16 @@ func Choose(n int64, i int64) int64 {
 	if n-i < smaller {
 		smaller = n - i
 	}
-	return PartialFact(n, smaller) / Fact(smaller)
+	return PartialFactInt(n, smaller) / FactInt(smaller)
 }
 
 // LnChoose returns the natural logarithm of the binomial coefficient for integer n  and k.
 func LnChoose(n int64, i int64) float64 {
-	smaller := i
-	if n-i < smaller {
-		smaller = n - i
+nn:= float64(n)
+ii:= float64(i)
+	smaller := ii
+	if nn-ii < smaller {
+		smaller = nn - ii
 	}
-	return LnPartialFact(n, smaller) - LnFact(smaller)
+	return LnPartialFact(nn, smaller) - LnFact(smaller)
 }

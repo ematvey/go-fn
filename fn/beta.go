@@ -95,8 +95,8 @@ func BetaIncReg(α, β, x float64) float64 {
 	return res
 }
 
-// lbeta returns the value of the log beta function. Translation of the Fortran code by W. Fullerton of Los Alamos Scientific Laboratory.
-func lbeta(a, b float64) float64 {
+// LnBeta returns the value of the log beta function. Translation of the Fortran code by W. Fullerton of Los Alamos Scientific Laboratory.
+func LnBeta(a, b float64) float64 {
 	var corr float64
 
 	if isNaN(a) || isNaN(b) {
