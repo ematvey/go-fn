@@ -110,3 +110,64 @@ func LnGammaPRatio(p int, x, y float64) (r float64) {
 	}
 	return
 }
+
+////////////////////
+func lgammafn(x float64) float64 {
+
+	/* For IEEE double precision DBL_EPSILON = 2^-52 = 2.220446049250313e-16 :
+	   xmax  = DBL_MAX / log(DBL_MAX) = 2^1024 / (1024 * log(2)) = 2^1014 / log(2)
+	   dxrel = sqrt(DBL_EPSILON) = 2^-26 = 5^26 * 1e-26 (is *exact* below !)
+	*/
+	const (
+		xmax  = 2.5327372760800758e+305
+		dxrel = 1.490116119384765696e-8
+	)
+
+	if isNaN(x) {
+		return x
+	}
+	if x <= 0 && x == trunc(x) { /* Negative integer argument */
+		return posInf /* +Inf, since lgamma(x) = log|gamma(x)| */
+	}
+
+	y := abs(x)
+
+	if y < 1e-306 { // denormalized range
+		return -log(x)
+	}
+	if y <= 10 {
+		return log(abs(math.Gamma(x)))
+	}
+
+	//   ELSE  y = |x| > 10 
+
+	if y > xmax {
+		return posInf
+	}
+
+	if x > 0 { /* i.e. y = x > 10 */
+		if x > 1e17 {
+			return (x * (log(x) - 1))
+		} else if x > 4934720. {
+			return (lnSqrt2π + (x-0.5)*log(x) - x)
+		} else {
+			return lnSqrt2π + (x-0.5)*log(x) - x + lgammacor(x)
+		}
+	}
+	/* else: x < -10; y = -x */
+	sinpiy := abs(sin(π * y))
+
+	if sinpiy == 0 { // Negative integer argument
+		//	  Now UNNECESSARY: caught above, should NEVER happen! 
+		return nan
+	}
+
+	ans := lnSqrtπd2 + (x-0.5)*log(y) - x - log(sinpiy) - lgammacor(y)
+
+	if abs((x-trunc(x-0.5))*ans/x) < dxrel {
+
+		panic("precision")
+	}
+
+	return ans
+}

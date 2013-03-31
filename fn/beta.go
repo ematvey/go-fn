@@ -94,3 +94,44 @@ func BetaIncReg(α, β, x float64) float64 {
 	}
 	return res
 }
+
+// lbeta returns the value of the log beta function. Translation of the Fortran code by W. Fullerton of Los Alamos Scientific Laboratory.
+func lbeta(a, b float64) float64 {
+	var corr float64
+
+	if isNaN(a) || isNaN(b) {
+		return a + b
+	}
+	q := a
+	p := q
+	if b < p {
+		p = b
+	}
+	if b > q {
+		q = b
+	}
+
+	/* both arguments must be >= 0 */
+	if p < 0 {
+		return nan
+	} else if p == 0 {
+		return posInf
+	} else if isInf(q, 0) { /* q == +Inf */
+		return negInf
+	}
+
+	if p >= 10 {
+		/* p and q are big. */
+		corr = lgammacor(p) + lgammacor(q) - lgammacor(p+q)
+		return log(q)*-0.5 + lnSqrt2π + corr + (p-0.5)*log(p/(p+q)) + q*log1p(-p/(p+q))
+	} else if q >= 10 {
+		/* p is small, but q is big. */
+		corr = lgammacor(q) - lgammacor(p+q)
+		return lgammafn(p) + corr + p - p*log(p+q) + (q-0.5)*log1p(-p/(p+q))
+	}
+	/* p and q are small: p <= q < 10. */
+	if p < 1e-306 {
+		return LnΓ(p) + (LnΓ(q) - LnΓ(p+q))
+	}
+	return log(math.Gamma(p) * (math.Gamma(q) / math.Gamma(p+q)))
+}
