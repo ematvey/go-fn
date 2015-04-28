@@ -1,0 +1,1 @@
+Mathematical functions written in Go language, that are not covered by math pkg
